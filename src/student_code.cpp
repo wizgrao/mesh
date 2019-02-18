@@ -7,29 +7,34 @@ namespace CGL
 {
   void BezierCurve::evaluateStep()
   {
-    // TODO Part 1.
-    // Perform one step of the Bezier curve's evaluation at t using de Casteljau's algorithm for subdivision.
-    // Store all of the intermediate control points into the 2D vector evaluatedLevels.
-    return;
+      std::vector<Vector2D> points;
+      auto lastLevel = evaluatedLevels[evaluatedLevels.size() - 1];
+      for (int i = 0; i < lastLevel.size() - 1; i++) {
+          points.push_back((1-t)*lastLevel[i] + t*lastLevel[i+1]);
+      }
+      evaluatedLevels.push_back(points);
   }
 
 
   Vector3D BezierPatch::evaluate(double u, double v) const
   {
-    // TODO Part 2.
-    // Evaluate the Bezier surface at parameters (u, v) through 2D de Casteljau subdivision.
-    // (i.e. Unlike Part 1 where we performed one subdivision level per call to evaluateStep, this function
-    // should apply de Casteljau's algorithm until it computes the final, evaluated point on the surface)
-    return Vector3D();
+    vector<Vector3D> points;
+    for (vector<Vector3D> p : controlPoints) {
+        points.push_back(evaluate1D(p, u));
+    }
+    return evaluate1D(points, v);
   }
 
-  Vector3D BezierPatch::evaluate1D(std::vector<Vector3D> points, double t) const
-  {
-    // TODO Part 2.
-    // Optional helper function that you might find useful to implement as an abstraction when implementing BezierPatch::evaluate.
-    // Given an array of 4 points that lie on a single curve, evaluates the Bezier curve at parameter t using 1D de Casteljau subdivision.
-    return Vector3D();
- }
+  Vector3D BezierPatch::evaluate1D(std::vector<Vector3D> points, double t) const {
+      for (int i = 0; i < 3; i ++) {
+        std::vector<Vector3D> newvecs;
+          for (int i = 0; i < points.size() - 1; i++) {
+              newvecs.push_back((1-t)*points[i] + t*points[i+1]);
+          }
+          points = newvecs;
+      }
+      return points[0];
+  }
 
 
 
@@ -39,7 +44,17 @@ namespace CGL
     // TODO Returns an approximate unit normal at this vertex, computed by
     // TODO taking the area-weighted average of the normals of neighboring
     // TODO triangles, then normalizing.
-    return Vector3D();
+    HalfedgeCIter e = halfedge();
+    Vector3D norm(0,0,0);
+    do {
+        Vector3D p1 = e->next()->vertex()->position - position;
+        Vector3D p2 = e->next()->next()->vertex()->position - position;
+        norm += cross(p1, p2);
+        e = e->twin()->next();
+    }while(e != halfedge());
+    return norm.unit();
+
+
   }
 
   EdgeIter HalfedgeMesh::flipEdge( EdgeIter e0 )
