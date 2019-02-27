@@ -222,7 +222,7 @@ namespace CGL {
                 sum += hp->next()->vertex()->position;
                 hp = hp->twin()->next();
             } while(hp != h);
-            double u = (degree==3)?3.0/8.0 : 3.0/8.0/(double)degree;
+            double u = (degree==3)?3.0/16.0 : 3.0/8.0/(double)degree;
             v->newPosition = (1-degree*u)*v->position + u*sum;
         }
         std::vector<EdgeIter> edges;
