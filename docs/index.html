@@ -17,6 +17,9 @@
 </style>
 <title>CS 184 Mesh Editor</title>
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" async
+            src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"
+            async></script>
 <link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
 </head>
 
@@ -40,29 +43,47 @@
 
 <h3 align="middle">Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
 
-<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+<p>
+De Casteljau's algorithm is a way of generating bezier curves using a set of control points. Essentially, we apply a recursive algorithm on the control points. We can think of the bezier curve as a function from a set of control points and a value \( t, 0 \leq t \leq 1\) to a point. This function traced out for all \(t\) gives the desired curve. If we only have one control point, we just return the control point. If there are more control points, we create a new set of control points by linearly interpolating adjacent control points according to \(t\). For example, if we had the points \( p_0 = \left( 0,0 \right),  p_1 =\left( 1,1 \right), p_2 =  \left( 2,0 \right) \) and \(t=0.25\) we would get new points \( p'_0 = (1-.25)p_0 + .25p_1, p'_1 = (1-.25)p_1 + .25p_2 \). We would then apply this algorithm again with these points and the same \(t\) to get the next set of points. We do this until we have one point left. 
+</p>
 
 <div align="middle">
   <table style="width=100%">
     <tr>
       <td>
-        <img src="images/image1.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
+        <img src="images/b1.png" align="middle" width="500px"/>
+        <figcaption align="middle">First iteration of De Casteljau's algorithm with 6 control points</figcaption>
       </td>
       <td>
-        <img src="images/image2.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
+        <img src="images/b2.png" align="middle" width="500px"/>
+        <figcaption align="middle">Second iteration of De Casteljau's algorithm with 6 control points</figcaption>
       </td>
     </tr>
     <br>
     <tr>
       <td>
-        <img src="images/image3.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
+        <img src="images/b3.png" align="middle" width="500px"/>
+        <figcaption align="middle">Third iteration of De Casteljau's algorithm with 6 control points</figcaption>
       </td>
       <td>
-        <img src="images/image4.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
+        <img src="images/b4.png" align="middle" width="500px"/>
+        <figcaption align="middle">Fourth iteration of De Casteljau's algorithm with 6 control points</figcaption>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="images/b5.png" align="middle" width="500px"/>
+        <figcaption align="middle">Fifth iteration of De Casteljau's algorithm with 6 control points</figcaption>
+      </td>
+      <td>
+        <img src="images/b6.png" align="middle" width="500px"/>
+        <figcaption align="middle">Sixth and final iteration of De Casteljau's algorithm with 6 control points</figcaption>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <img src="images/b7.png" align="middle" width="500px"/>
+        <figcaption align="middle">Result of moving the control points slightly and varying \(t\)</figcaption>
       </td>
     </tr>
   </table>
@@ -70,26 +91,50 @@
 
 
 <h3 align="middle">Part 2: Bezier surfaces with separable 1D de Casteljau subdivision</h3>
+<p> 
+The algorithm from above can generalize for surfaces as well. Suppose we had a series of bezier curves. If we evaluate these at a particular \(t\) we get a set of points. We can use these points to construct another bezier curve. Now, we have a function thats parameterized by two variables, one to evaluate the first set of bezier curves and find a new bezier curve, and another to find the final point from that curve. So, this is a two dimensional surface.
+</p>
+<div align="middle" width="100%">
+<img src="images/bez1.png" width=500 align="middle" />
 
-
+<figcaption align="middle">A teapot constructed through bezier surfaces.</figcaption>
+</div>
 
 <h2 align="middle">Section II: Sampling</h2>
 
 <h3 align="middle">Part 3: Average normals for half-edge meshes</h3>
-
-
+<p> In this part of the project, we try to find the approximate normal vector to all of the vectors in the scene. We do this by taking the average of all of the triangle normals weighted by the area of the triangle. When we take the cross product of two vectors in a triangle, we get a vector in the direction of the normal with magnitude equal to two times the area of the triangle. So, if we add all of the cross products together, we get the weighted sum, which then we can normalize to get the final vector. This was implemented through the half edge data structure. For every edge coming out of a vertex, we can find the next half edge by taking the next of the twin of the half edge. for every two adjacent half edges coming out of the vertex, we can find the vector and take the cross products and find the weighed average that way.</p>
+<img src="images/n1.png">
+<p>A teapot with just the triangle normals</p>
+<img src="images/n2.png">
+<p>Teapot with the vertex normals interpolated</p>
 <h3 align="middle">Part 4: Half-edge flip</h3>
+<p> In this part of the project we implement an edge flip. Each edge in a mesh connects two triangles. These two triangles forms a quadrilateral (not necessarily planar) with the edge in the middle. Edge flipping just makes the edge connect the other two vertices instead of the ones that it is currently connected to.
 
-
+We implement this with the half edge data structure by finding all of the faces, edges, half edges, and vertices that are affected and just reassign pointers to get the required topology. 
+<img src="images/f1.png">
+<p>Teapot without edges flipped</p>
+<img src="images/f2.png">
+<p>Teapot with some edges flipped</p>
 <h3 align="middle">Part 5: Half-edge split</h3>
-
-
+<p> Edge splits are similar to flips, except instead of changing the edge we add two new edges and a vertex in the middle. This is implemented similarly except we have to construct a new vertex, 3 new edges, 6 new half edges, and 2 new faces. We assign the pointers accordingly.
 <h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
+<p> To implement loop subdivision, we calculate the new positions based on a weighed average, split all of the edges, rotate all incorrect new edges, and then move all of the vertices to the right position.
 
-<h2 align="middle">Section III: Mesh Competition</h2>
-<p>If you are not participating in the optional mesh competition, don't worry about this section!</p>
+<img src="images/u1.png">
+<p>Base cube without subdivision</p>
+<img src="images/u2.png">
+<p>Same cube, except with subdivision. Notice that this is asymetric. This is due to the asymetric topology of the mesh.</p>
 
-<h3 align="middle">Part 7: Design your own mesh!</h3>
-
+<img src="images/u3.png">
+<p>Base cube with symmetric topolgy done through edge splitting</p>
+<img src="images/u4.png">
+<p>Same cube as above wih subdivision. It is now symmetric since the topology is symmetric</p>
+<img src="images/u5.png">
+<p>Base cube with some edge splits to increase the number of edges on one of the cube edges</p>
+<img src="images/u6.png">
+<p>Same cube edge but subdivided, note that the edge with the initial subdivisions is slightly sharper. This is because there are more control points on the edge, biasing the limit surface towards that edge.</p>
+<img src="images/u7.png">
+<p>Exact same model as above, but rotated to an unsplit edge. Notice that it isn't as sharp</p>
 </body>
 </html>
