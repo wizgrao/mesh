@@ -118,6 +118,12 @@ We implement this with the half edge data structure by finding all of the faces,
 <p>Teapot with some edges flipped</p>
 <h3 align="middle">Part 5: Half-edge split</h3>
 <p> Edge splits are similar to flips, except instead of changing the edge we add two new edges and a vertex in the middle. This is implemented similarly except we have to construct a new vertex, 3 new edges, 6 new half edges, and 2 new faces. We assign the pointers accordingly.
+<img src="images/s1.png">
+<p>Teapot without edges split</p>
+<img src="images/s2.png">
+<p>Teapot with some edges split</p>
+<img src="images/s3.png">
+<p>Teapot with some edges flipped and split</p>
 <h3 align="middle">Part 6: Loop subdivision for mesh upsampling</h3>
 <p> To implement loop subdivision, we calculate the new positions based on a weighed average, split all of the edges, rotate all incorrect new edges, and then move all of the vertices to the right position.
 
